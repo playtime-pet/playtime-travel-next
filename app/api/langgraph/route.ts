@@ -1,35 +1,26 @@
 import { HumanMessage, isAIMessageChunk } from "@langchain/core/messages";
-import { StateGraph } from "@langchain/langgraph";
-import { StateAnnotation } from "@utils/langgraph/state";
-import {
-    classifyCategory,
-    classifyDecision,
-    search,
-    callModel,
-} from "@utils/langgraph/nodes";
-
+import { workflowApp } from "@utils/langgraph/workflow";
+import { requestContext } from "@/app/context/RequestContext";
+import { userCache } from "@/app/utils/cache";
 
 export async function POST(req: Request) {
     try {
-        const { message } = await req.json();
+        const { category, location, message } = await req.json();
 
-        const workflow = new StateGraph(StateAnnotation)
-            .addNode("call_model", callModel)
-            .addNode("classify_category", classifyCategory)
-            .addNode("search", search)
-            .addEdge("__start__", "classify_category")
-            .addConditionalEdges("classify_category", classifyDecision)
-            .addEdge("search", "__end__")
-            .addEdge("call_model", "__end__");
+        const userId = requestContext.getCurrentUserId();
+        if (!userId) {
+            return new Response("Unauthorized", { status: 401 });
+        }
 
-        // const checkpointer = new MemorySaver();
-        // const app = workflow.compile({ checkpointer });
-        const app = workflow.compile();
+        const userInfo = userCache.get(userId);
+        if (!userInfo) {
+            throw new Error("User context not found");
+        }
 
-        // 创建一个 TransformStream 来处理数据
+        const petInfo = userCache.get(userInfo.id);
+
         const stream = new TransformStream({
             async transform(chunk, controller) {
-                // 将数据包装成 SSE 格式
                 controller.enqueue(
                     `data: ${JSON.stringify({
                         choices: [{ delta: { content: chunk } }],
@@ -40,12 +31,16 @@ export async function POST(req: Request) {
 
         const writer = stream.writable.getWriter();
 
-        // 异步处理流式事件
         (async () => {
             try {
-                for await (const { event, data } of app.streamEvents(
+                // 在调用 workflow 时可以使用上下文信息
+                for await (const { event, data } of workflowApp.streamEvents(
                     {
+                        category,
+                        location,
                         messages: [new HumanMessage(message)],
+                        userInfo, // 传入用户信息
+                        petInfo, // 传入宠物信息
                     },
                     {
                         version: "v2",
@@ -54,15 +49,12 @@ export async function POST(req: Request) {
                     console.log(`event: `, event);
                     if (
                         event === "on_chat_model_stream" &&
-                        // metadata.langgraph_node === "call_model"
                         isAIMessageChunk(data.chunk)
                     ) {
-                        // 处理普通文本内容
                         if (data.chunk.content) {
                             await writer.write(data.chunk.content);
                         }
 
-                        // 处理工具调用（如果有）
                         if (
                             data.chunk.tool_call_chunks &&
                             data.chunk.tool_call_chunks.length > 0
@@ -89,7 +81,7 @@ export async function POST(req: Request) {
             },
         });
     } catch (error) {
-        console.error(error)
+        console.error(error);
         return new Response(
             JSON.stringify({ error: "Internal Server Error" }),
             {
