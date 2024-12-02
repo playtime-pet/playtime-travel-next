@@ -1,4 +1,3 @@
-import { AppwriteError } from "@/app/utils/appwrite";
 import { Client, Databases, Models } from "appwrite";
 
 export class AppwriteService {
@@ -24,7 +23,7 @@ export class AppwriteService {
         );
 
         if (!result) {
-            throw new AppwriteError(`Document not found: ${documentId}`);
+            throw new Error(`Document not found: ${documentId}`);
         }
 
         return result;
@@ -41,7 +40,7 @@ export class AppwriteService {
             queries
         );
         if (!result) {
-            throw new AppwriteError(`Document not found: ${collectionId}`);
+            throw new Error(`Document not found: ${collectionId}`);
         }
         return result;
     }
@@ -59,7 +58,7 @@ export class AppwriteService {
             data
         );
         if (!result) {
-            throw new AppwriteError(`Document not created: ${documentId}`);
+            throw new Error(`Document not created: ${documentId}`);
         }
         return result;
     }

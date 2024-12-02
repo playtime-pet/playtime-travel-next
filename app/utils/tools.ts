@@ -1,7 +1,8 @@
 import { randomUUID } from "crypto";
 
 const generateUUID = () => {
-    return randomUUID();
+    const uuid = randomUUID();
+    return uuid.substring(uuid.lastIndexOf("-") + 1);
 };
 
 export { generateUUID };

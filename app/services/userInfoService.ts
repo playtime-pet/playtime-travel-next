@@ -1,13 +1,8 @@
 import { appwrite } from "./appwriteService";
 import { UserInfo } from "@models/UserInfo";
-import { randomUUID } from "crypto";
 import { userCache } from "@/app/utils/cache";
-import { AppwriteError } from "@/app/utils/appwrite";
 import { Query } from "appwrite";
-
-const generateUUID = () => {
-    return randomUUID();
-};
+import initUserInfo, { UserInfoWithMetadata } from "@models/UserInfo";
 
 async function list() {
     // const databases = getDatabase();
@@ -15,7 +10,7 @@ async function list() {
     const result = await appwrite.listDocuments(
         process.env.APPWRITE_DATABSE_ID || "", // databaseId
         process.env.APPWRITE_COLLECTION_USER_INFO || "", // collectionId
-        [Query.limit(25)] // queries (optional)
+        [Query.orderDesc("name")] // queries (optional)
     );
 
     return result;
@@ -26,7 +21,7 @@ async function create(data: UserInfo) {
     const result = await appwrite.createDocument(
         process.env.APPWRITE_DATABSE_ID || "", // databaseId
         process.env.APPWRITE_COLLECTION_USER_INFO || "", // collectionId
-        generateUUID(),
+        data.id,
         data
     );
 
@@ -40,21 +35,18 @@ async function get(id: string) {
     }
 
     try {
-        const result = await appwrite.getDocument(
+        const result: UserInfoWithMetadata = await appwrite.getDocument(
             process.env.APPWRITE_DATABSE_ID || "",
             process.env.APPWRITE_COLLECTION_USER_INFO || "",
             id
         );
 
-        const userInfo: UserInfo = {
-            id: result.$id,
-            name: result.name,
-            avatar: result.avatar,
-        };
+        const userInfo: UserInfo = initUserInfo(result);
         userCache.set(id, userInfo);
+
         return userInfo;
     } catch (error) {
-        if (error instanceof AppwriteError) {
+        if (error instanceof Error) {
             return null;
         }
         throw error;
