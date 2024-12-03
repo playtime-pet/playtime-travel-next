@@ -24,7 +24,8 @@
       "@context/*": ["./app/context/*"],
       "@models/*": ["./app/models/*"],
       "@services/*": ["./app/services/*"]
-    }
+    },
+    "baseUrl": "."
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

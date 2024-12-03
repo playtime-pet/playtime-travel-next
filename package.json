@@ -13,13 +13,14 @@
     "@langchain/core": "^0.3.19",
     "@langchain/langgraph": "^0.2.22",
     "@langchain/openai": "^0.3.14",
+    "@supabase/supabase-js": "^2.46.2",
     "@tavily/core": "^0.0.2",
     "@types/lru-cache": "^7.10.10",
-    "appwrite": "^16.0.2",
     "lru-cache": "^11.0.2",
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106"
+    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "type-fest": "^4.30.0"
   },
   "devDependencies": {
     "@types/node": "^20",

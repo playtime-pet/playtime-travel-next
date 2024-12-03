@@ -1,29 +1,21 @@
-import { Query } from "appwrite";
-import { appwrite } from "./appwriteService";
-import initPetInfo, { PetInfo, PetInfoWithMetadata } from "@models/PetInfo";
 import { petCache } from "@/app/utils/cache";
+import { DbService } from "./dbService";
+import { QueryData } from "@supabase/supabase-js";
+import { TablesInsert } from "../utils/types/database-generated.types";
+import { PetInfo } from "../models/PetInfo";
+
+const dbService = new DbService();
 
 async function list() {
-    const result = await appwrite.listDocuments(
-        process.env.APPWRITE_DATABSE_ID || "", // databaseId
-        process.env.APPWRITE_COLLECTION_PET_INFO || "", // collectionId
-        [Query.limit(25)] // queries (optional)
-    );
-
-    return result;
+    const res = await dbService.list<"pet_info">("pet_info");
+    return res;
 }
 
-async function create(data: PetInfo) {
-    // const databases = getDatabase();
-    const result = await appwrite.createDocument(
-        process.env.APPWRITE_DATABSE_ID || "", // databaseId
-        process.env.APPWRITE_COLLECTION_PET_INFO || "", // collectionId
-        data.id,
-        data
-    );
+async function create(pet: PetInfo) {
+    const res = await dbService.create<"pet_info">("pet_info", pet);
+    petCache.set(pet.id, pet);
 
-    petCache.set(result.$id, data);
-    return result;
+    return res;
 }
 
 async function get(id: string) {
@@ -31,26 +23,25 @@ async function get(id: string) {
         return petCache.get(id) as PetInfo;
     }
 
-    try {
-        const result: PetInfoWithMetadata = await appwrite.getDocument(
-            process.env.APPWRITE_DATABSE_ID || "",
-            process.env.APPWRITE_COLLECTION_PET_INFO || "",
-            id
-        );
+    const pet = await dbService.get<"pet_info">("pet_info", "id", id);
 
-        const petInfo: PetInfo = initPetInfo(result);
-        petCache.set(id, petInfo);
-        return petInfo;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+    petCache.set(id, pet as PetInfo);
+
+    return pet;
+}
+
+async function deletePet(id: string) {
+    await dbService.delete<"pet_info">("pet_info", "id", id);
+    petCache.delete(id);
+
+    return id;
 }
 
 const petInfoService = {
     list,
     create,
     get,
+    deletePet,
 };
 
 export default petInfoService;

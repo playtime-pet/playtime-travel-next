@@ -15,3 +15,13 @@ export async function GET(
 
     return NextResponse.json(userInfo);
 }
+
+export async function DELETE(
+    request: Request,
+    { params }: { params: { id: string } }
+) {
+    const { id } = await params;
+    const userInfo = await userInfoService.deleteUser(id);
+
+    return NextResponse.json({ user_id: userInfo });
+}

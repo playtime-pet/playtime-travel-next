@@ -7,11 +7,11 @@ export async function GET(
     { params }: { params: { id: string } }
 ) {
     const { id } = await params;
-    const userInfo = await petInfoService.get(id);
+    const petInfo = await petInfoService.get(id);
 
-    if (!userInfo) {
+    if (!petInfo) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json(userInfo);
+    return NextResponse.json(petInfo);
 }

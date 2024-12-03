@@ -1,32 +1,20 @@
-import { appwrite } from "./appwriteService";
 import { UserInfo } from "@models/UserInfo";
 import { userCache } from "@/app/utils/cache";
-import { Query } from "appwrite";
-import initUserInfo, { UserInfoWithMetadata } from "@models/UserInfo";
+
+import { DbService } from "./dbService";
+
+const dbService = new DbService();
 
 async function list() {
-    // const databases = getDatabase();
-
-    const result = await appwrite.listDocuments(
-        process.env.APPWRITE_DATABSE_ID || "", // databaseId
-        process.env.APPWRITE_COLLECTION_USER_INFO || "", // collectionId
-        [Query.orderDesc("name")] // queries (optional)
-    );
-
-    return result;
+    const res = await dbService.list<"user_info">("user_info");
+    return res;
 }
 
 async function create(data: UserInfo) {
-    // const databases = getDatabase();
-    const result = await appwrite.createDocument(
-        process.env.APPWRITE_DATABSE_ID || "", // databaseId
-        process.env.APPWRITE_COLLECTION_USER_INFO || "", // collectionId
-        data.id,
-        data
-    );
+    const res = await dbService.create<"user_info">("user_info", data);
+    userCache.set(data.id, data);
 
-    userCache.set(result.$id, data);
-    return result;
+    return res;
 }
 
 async function get(id: string) {
@@ -34,22 +22,19 @@ async function get(id: string) {
         return userCache.get(id) as UserInfo;
     }
 
-    try {
-        const result: UserInfoWithMetadata = await appwrite.getDocument(
-            process.env.APPWRITE_DATABSE_ID || "",
-            process.env.APPWRITE_COLLECTION_USER_INFO || "",
-            id
-        );
+    const user = await dbService.get<"user_info">("user_info", "id", id);
 
-        const userInfo: UserInfo = initUserInfo(result);
-        userCache.set(id, userInfo);
+    userCache.set(id, user as UserInfo);
 
-        return userInfo;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+    return user;
 }
 
-const userInfoService = { list, create, get };
+async function deleteUser(id: string) {
+    await dbService.delete<"user_info">("user_info", "id", id);
+    userCache.delete(id);
+
+    return id;
+}
+
+const userInfoService = { list, create, get, deleteUser };
 export default userInfoService;
