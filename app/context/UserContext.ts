@@ -1,5 +1,5 @@
-import { UserInfo } from "@/app/models/UserInfo";
-import { PetInfo } from "@/app/models/PetInfo";
+import { UserInfo } from "@models/UserInfo";
+import { PetInfo } from "@models/PetInfo";
 
 class UserContextManager {
     private static instance: UserContextManager;

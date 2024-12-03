@@ -28,7 +28,7 @@ async function create(data: PetInfo) {
 
 async function get(id: string) {
     if (petCache.has(id)) {
-        return petCache.get(id);
+        return petCache.get(id) as PetInfo;
     }
 
     try {
@@ -42,9 +42,7 @@ async function get(id: string) {
         petCache.set(id, petInfo);
         return petInfo;
     } catch (error) {
-        if (error instanceof Error) {
-            return null;
-        }
+        console.error(error);
         throw error;
     }
 }

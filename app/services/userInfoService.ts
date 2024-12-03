@@ -31,7 +31,7 @@ async function create(data: UserInfo) {
 
 async function get(id: string) {
     if (userCache.has(id)) {
-        return userCache.get(id);
+        return userCache.get(id) as UserInfo;
     }
 
     try {
@@ -46,9 +46,7 @@ async function get(id: string) {
 
         return userInfo;
     } catch (error) {
-        if (error instanceof Error) {
-            return null;
-        }
+        console.error(error);
         throw error;
     }
 }
