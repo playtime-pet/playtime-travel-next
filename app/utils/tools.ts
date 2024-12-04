@@ -5,4 +5,8 @@ const generateUUID = () => {
     return uuid.substring(uuid.lastIndexOf("-") + 1);
 };
 
-export { generateUUID };
+function createLocationPoint(longitude: number, latitude: number): string {
+    return `POINT(${longitude} ${latitude})`;
+}
+
+export { generateUUID, createLocationPoint };

@@ -1,7 +1,5 @@
 import { petCache } from "@/app/utils/cache";
 import { DbService } from "./dbService";
-import { QueryData } from "@supabase/supabase-js";
-import { TablesInsert } from "../utils/types/database-generated.types";
 import { PetInfo } from "../models/PetInfo";
 
 const dbService = new DbService();
@@ -11,9 +9,9 @@ async function list() {
     return res;
 }
 
-async function create(pet: PetInfo) {
+async function create(pet: Omit<PetInfo, "id">) {
     const res = await dbService.create<"pet_info">("pet_info", pet);
-    petCache.set(pet.id, pet);
+    petCache.set(res.id, res as PetInfo);
 
     return res;
 }

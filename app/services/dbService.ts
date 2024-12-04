@@ -44,10 +44,12 @@ export class DbService {
     ) {
         const { data, error } = await this.database
             .from(table)
-            .insert(insertData);
+            .insert(insertData)
+            .select();
+        // .single();
 
         if (error) throw error;
-        return data;
+        return data[0];
     }
 
     async update<T extends keyof Database["public"]["Tables"]>(

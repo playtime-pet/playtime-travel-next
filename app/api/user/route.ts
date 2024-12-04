@@ -1,14 +1,10 @@
 import userInfoService from "@/app/services/userInfoService";
 import { NextResponse } from "next/server";
-import { generateUUID } from "@/app/utils/tools";
+import { UserInfo } from "@/app/models/UserInfo";
 
 export async function POST(req: Request) {
-    const { name, avatar } = await req.json();
-    const userInfo = await userInfoService.create({
-        id: generateUUID(),
-        name,
-        avatar,
-    });
+    const userData: Omit<UserInfo, "id"> = await req.json();
+    const userInfo = await userInfoService.create(userData);
     return NextResponse.json(userInfo);
 }
 

@@ -10,9 +10,9 @@ async function list() {
     return res;
 }
 
-async function create(data: UserInfo) {
+async function create(data: Omit<UserInfo, "id">) {
     const res = await dbService.create<"user_info">("user_info", data);
-    userCache.set(data.id, data);
+    userCache.set(res.id, res as UserInfo);
 
     return res;
 }

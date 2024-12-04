@@ -1,20 +1,10 @@
 import petInfoService from "@services/petInfoService";
 import { NextResponse } from "next/server";
-import { generateUUID } from "@/app/utils/tools";
+import { PetInfo } from "@/app/models/PetInfo";
 
 export async function POST(req: Request) {
-    const { user_id, name, age, size, type, gender, description } =
-        await req.json();
-    const petInfo = await petInfoService.create({
-        id: generateUUID(),
-        user_id: user_id,
-        name,
-        age,
-        size,
-        type,
-        gender,
-        description,
-    });
+    const petData: Omit<PetInfo, "id"> = await req.json();
+    const petInfo = await petInfoService.create(petData);
     return NextResponse.json(petInfo);
 }
 
