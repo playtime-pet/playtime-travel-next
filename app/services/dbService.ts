@@ -49,23 +49,23 @@ export class DbService {
         conditionValue: Database["public"]["Tables"][T]["Row"][keyof Database["public"]["Tables"][T]["Row"]]
     ): Promise<Database["public"]["Tables"][T]["Row"]> {
         const { data, error } = await this.database
-            .from(table.toString())
+            .from(table)
             .select()
-            .eq(field.toString(), conditionValue);
+            .eq(field.toString(), conditionValue)
+            .single();
 
         if (error) throw error;
         return data;
     }
 
     async create<T extends keyof Database["public"]["Tables"]>(
-        table: Tables<T>,
+        table: T,
         insertData: Database["public"]["Tables"][T]["Insert"]
     ) {
         const { data, error } = await this.database
             .from(table)
-            .insert(insertData)
+            .insert(insertData as any)
             .select();
-        // .single();
 
         if (error) throw error;
         return data[0];
@@ -80,9 +80,9 @@ export class DbService {
         conditionValue: Database["public"]["Tables"][T]["Row"][keyof Database["public"]["Tables"][T]["Row"]]
     ) {
         const { data, error } = await this.database
-            .from(table.toString())
-            .update(updateData)
-            .eq(field.toString(), conditionValue);
+            .from(table)
+            .update(updateData as any)
+            .eq(field as string, conditionValue);
 
         if (error) throw error;
         return data;
@@ -93,8 +93,8 @@ export class DbService {
         updateData: Database["public"]["Tables"][T]["Update"]
     ) {
         const { data, error } = await this.database
-            .from(table.toString())
-            .upsert(updateData)
+            .from(table)
+            .upsert(updateData as any)
             .select();
 
         if (error) throw error;
@@ -107,7 +107,7 @@ export class DbService {
         conditionValue: Database["public"]["Tables"][T]["Row"][keyof Database["public"]["Tables"][T]["Row"]]
     ) {
         const { data, error } = await this.database
-            .from(table.toString())
+            .from(table)
             .delete()
             .eq(field.toString(), conditionValue);
         if (error) throw error;
