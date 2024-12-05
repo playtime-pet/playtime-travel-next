@@ -1,11 +1,13 @@
 import { petCache } from "@/app/utils/cache";
 import { DbService } from "./dbService";
 import { PetInfo } from "../models/PetInfo";
+import { Database } from "../utils/types/database.types";
 
 const dbService = new DbService();
 
 async function list() {
-    const res = await dbService.list<"pet_info">("pet_info");
+    const res: Database["public"]["Tables"]["pet_info"]["Row"][] =
+        await dbService.list<"pet_info">("pet_info");
     return res;
 }
 

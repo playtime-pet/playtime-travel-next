@@ -1,17 +1,10 @@
-export interface Places {
-    id: string;
-    name: string;
-    location: string;
-    friendly_level: number;
-    pet_size: number;
-    address: string;
-    addition_info: {
-        images: string[];
-        description: string;
-    };
-}
+import { Database } from "../utils/types/database.types";
 
-export interface PlaceInput extends Omit<Places, "id" | "location"> {
+export type Places = Database["public"]["Tables"]["places"]["Row"];
+export type PlaceInput = {
+    name: string;
+    description?: string;
     longitude: number;
     latitude: number;
-}
+    // Add any other required fields
+};

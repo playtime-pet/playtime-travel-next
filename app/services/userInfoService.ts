@@ -2,11 +2,13 @@ import { UserInfo } from "@models/UserInfo";
 import { userCache } from "@/app/utils/cache";
 
 import { DbService } from "./dbService";
+import { Database } from "../utils/types/database.types";
 
 const dbService = new DbService();
 
 async function list() {
-    const res = await dbService.list<"user_info">("user_info");
+    const res: Database["public"]["Tables"]["user_info"]["Row"][] =
+        await dbService.list<"user_info">("user_info");
     return res;
 }
 

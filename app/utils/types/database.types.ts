@@ -1,6 +1,9 @@
 import { MergeDeep } from "type-fest";
 // import { Database as DatabaseGenerated } from "./database-generated.types";
-import { Database as DatabaseGenerated } from "./database-generated.types";
+import {
+    Database as DatabaseGenerated,
+    Json,
+} from "./database-generated.types";
 export type { Json } from "./database-generated.types";
 
 // Override the type for a specific column in a view:
@@ -9,7 +12,7 @@ export type Database = MergeDeep<
     {
         public: {
             Views: {
-                pet_info: {
+                pet_info_view: {
                     Row: {
                         age: number | null;
                         created_at: string;
@@ -45,7 +48,7 @@ export type Database = MergeDeep<
                     };
                     Relationships: [];
                 };
-                user_info: {
+                user_info_view: {
                     Row: {
                         avatar: string | null;
                         created_at: string;
@@ -63,6 +66,36 @@ export type Database = MergeDeep<
                         created_at?: string;
                         id?: string;
                         name?: string | null;
+                    };
+                    Relationships: [];
+                };
+                places_view: {
+                    Row: {
+                        addition_info: Json | null;
+                        address: string | null;
+                        friendly_level: number | null;
+                        id: string;
+                        location: unknown | null;
+                        name: string | null;
+                        pet_size: number | null;
+                    };
+                    Insert: {
+                        addition_info?: Json | null;
+                        address?: string | null;
+                        friendly_level?: number | null;
+                        id?: string;
+                        location?: unknown | null;
+                        name?: string | null;
+                        pet_size?: number | null;
+                    };
+                    Update: {
+                        addition_info?: Json | null;
+                        address?: string | null;
+                        friendly_level?: number | null;
+                        id?: string;
+                        location?: unknown | null;
+                        name?: string | null;
+                        pet_size?: number | null;
                     };
                     Relationships: [];
                 };
