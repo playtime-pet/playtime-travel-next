@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import placesService from "@/app/services/placesService";
+import { DbService } from "@/app/services/dbService";
 
 export async function GET(
     request: Request,
@@ -14,4 +15,11 @@ export async function GET(
     }
 
     return NextResponse.json(place);
+}
+
+export async function POST(request: Request) {
+    const dbService = new DbService();
+    const { lat, long } = await request.json();
+    const restaurants = await dbService.nearbyRestaurants(lat, long);
+    return NextResponse.json(restaurants);
 }

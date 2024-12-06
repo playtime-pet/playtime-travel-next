@@ -2,21 +2,26 @@ import { UserInfo } from "@models/UserInfo";
 import { userCache } from "@/app/utils/cache";
 
 import { DbService } from "./dbService";
-import { Database } from "../utils/types/database.types";
 
 const dbService = new DbService();
+const db = dbService.getDatabase();
 
 async function list() {
-    const res: Database["public"]["Tables"]["user_info"]["Row"][] =
-        await dbService.list<"user_info">("user_info");
-    return res;
+    const { data, error } = await db.from("user_info").select("*");
+    if (error) throw error;
+    return data;
 }
 
-async function create(data: Omit<UserInfo, "id">) {
-    const res = await dbService.create<"user_info">("user_info", data);
-    userCache.set(res.id, res as UserInfo);
+async function create(user: Omit<UserInfo, "id">) {
+    const { data, error } = await db
+        .from("user_info")
+        .insert(user)
+        .select()
+        .single();
+    if (error) throw error;
+    userCache.set(data.id, data as UserInfo);
 
-    return res;
+    return data;
 }
 
 async function get(id: string) {
@@ -24,15 +29,22 @@ async function get(id: string) {
         return userCache.get(id) as UserInfo;
     }
 
-    const user = await dbService.get<"user_info">("user_info", "id", id);
+    const { data, error } = await db
+        .from("user_info")
+        .select("*")
+        .eq("id", id)
+        .single();
+    if (error) throw error;
 
-    userCache.set(id, user as UserInfo);
+    userCache.set(id, data as UserInfo);
 
-    return user;
+    return data;
 }
 
 async function deleteUser(id: string) {
-    await dbService.delete<"user_info">("user_info", "id", id);
+    const { error } = await db.from("user_info").delete().eq("id", id);
+    if (error) throw error;
+
     userCache.delete(id);
 
     return id;

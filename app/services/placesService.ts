@@ -4,6 +4,7 @@ import { createLocationPoint } from "../utils/tools";
 import { Database } from "../utils/types/database.types";
 
 const dbService = new DbService();
+const db = dbService.getDatabase();
 
 async function insertPlace(place: PlaceInput) {
     const locationPoint = createLocationPoint(place.longitude, place.latitude);
@@ -12,30 +13,41 @@ async function insertPlace(place: PlaceInput) {
         ...originPlace,
         location: locationPoint,
     };
-    const res = await dbService.create<"places">("places", placeData);
-    return res;
+    const { data, error } = await db
+        .from("places")
+        .insert(placeData)
+        .select()
+        .single();
+    if (error) throw error;
+    return data;
 }
 
 async function listPlaces(): Promise<Places[]> {
-    const res: Database["public"]["Tables"]["places"]["Row"][] =
-        await dbService.list<"places">("places");
-    return res;
+    const { data, error } = await db.from("places").select("*");
+    if (error) throw error;
+    return data;
 }
 
 async function getPlace(id: string): Promise<Places> {
-    const res = await dbService.get<"places">("places", "id", id);
-    return res;
+    const { data, error } = await db
+        .from("places")
+        .select("*")
+        .eq("id", id)
+        .single();
+    if (error) throw error;
+    return data;
 }
 
 async function updatePlace(id: string, place: Partial<Omit<Places, "id">>) {
     const updateData: Database["public"]["Tables"]["places"]["Update"] = place;
-    const res = await dbService.update<"places">(
-        "places",
-        updateData,
-        "id",
-        id
-    );
-    return res;
+    const { data, error } = await db
+        .from("places")
+        .update(updateData)
+        .eq("id", id)
+        .select()
+        .single();
+    if (error) throw error;
+    return data;
 }
 
 const placesService = {

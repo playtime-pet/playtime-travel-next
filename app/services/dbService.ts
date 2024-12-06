@@ -26,97 +26,97 @@ export class DbService {
         return this.database;
     }
 
-    async list<T extends TableName>(table: T): Promise<Row<T>[]> {
-        const queryData = this.database.from(table).select();
-        type QueryRes = QueryData<typeof queryData>;
-        const { data, error } = await queryData;
-        // const { data } = await this.database
-        //     .from(table)
-        //     .select()
-        //     .returns<Row<T>[]>();
+    // async list<T extends TableName>(table: T): Promise<Row<T>[]> {
+    //     const queryData = this.database.from(table).select();
+    //     type QueryRes = QueryData<typeof queryData>;
+    //     const { data, error } = await queryData;
+    //     // const { data } = await this.database
+    //     //     .from(table)
+    //     //     .select()
+    //     //     .returns<Row<T>[]>();
 
-        if (error) throw error;
+    //     if (error) throw error;
 
-        const res: QueryRes = data;
-        return res;
-    }
+    //     return data;
+    // }
 
-    async get<T extends keyof Database["public"]["Tables"]>(
-        table: T,
-        // field: string,
-        // conditionValue: any
-        field: keyof Database["public"]["Tables"][T]["Row"],
-        conditionValue: Database["public"]["Tables"][T]["Row"][keyof Database["public"]["Tables"][T]["Row"]]
-    ): Promise<Database["public"]["Tables"][T]["Row"]> {
-        const { data, error } = await this.database
-            .from(table)
-            .select()
-            .eq(field.toString(), conditionValue)
-            .single();
+    // async get<T extends keyof Database["public"]["Tables"]>(
+    //     table: T,
+    //     // field: string,
+    //     // conditionValue: any
+    //     field: keyof Database["public"]["Tables"][T]["Row"],
+    //     conditionValue: Database["public"]["Tables"][T]["Row"][keyof Database["public"]["Tables"][T]["Row"]]
+    // ): Promise<Database["public"]["Tables"][T]["Row"]> {
+    //     const { data, error } = await this.database
+    //         .from(table)
+    //         .select()
+    //         .eq(field.toString(), conditionValue)
+    //         .single();
 
-        if (error) throw error;
-        return data;
-    }
+    //     if (error) throw error;
+    //     return data;
+    // }
 
-    async create<T extends keyof Database["public"]["Tables"]>(
-        table: T,
-        insertData: Database["public"]["Tables"][T]["Insert"]
-    ) {
-        const { data, error } = await this.database
-            .from(table)
-            .insert(insertData as any)
-            .select();
+    // async create<T extends keyof Database["public"]["Tables"]>(
+    //     table: T,
+    //     insertData: Database["public"]["Tables"][T]["Insert"]
+    // ) {
+    //     const { data, error } = await this.database
+    //         .from(table)
+    //         .insert(insertData as any)
+    //         .select();
 
-        if (error) throw error;
-        return data[0];
-    }
+    //     if (error) throw error;
+    //     return data[0];
+    // }
 
-    async update<T extends keyof Database["public"]["Tables"]>(
-        table: T,
-        updateData: Database["public"]["Tables"][T]["Update"],
-        // field: string,
-        // conditionValue: any
-        field: keyof Database["public"]["Tables"][T]["Row"],
-        conditionValue: Database["public"]["Tables"][T]["Row"][keyof Database["public"]["Tables"][T]["Row"]]
-    ) {
-        const { data, error } = await this.database
-            .from(table)
-            .update(updateData as any)
-            .eq(field as string, conditionValue);
+    // async update<T extends keyof Database["public"]["Tables"]>(
+    //     table: T,
+    //     updateData: Database["public"]["Tables"][T]["Update"],
+    //     // field: string,
+    //     // conditionValue: any
+    //     field: keyof Database["public"]["Tables"][T]["Row"],
+    //     conditionValue: Database["public"]["Tables"][T]["Row"][keyof Database["public"]["Tables"][T]["Row"]]
+    // ) {
+    //     const { data, error } = await this.database
+    //         .from(table)
+    //         .update(updateData as any)
+    //         .eq(field as string, conditionValue);
 
-        if (error) throw error;
-        return data;
-    }
+    //     if (error) throw error;
+    //     return data;
+    // }
 
-    async upsert<T extends keyof Database["public"]["Tables"]>(
-        table: T,
-        updateData: Database["public"]["Tables"][T]["Update"]
-    ) {
-        const { data, error } = await this.database
-            .from(table)
-            .upsert(updateData as any)
-            .select();
+    // async upsert<T extends keyof Database["public"]["Tables"]>(
+    //     table: T,
+    //     updateData: Database["public"]["Tables"][T]["Update"]
+    // ) {
+    //     const { data, error } = await this.database
+    //         .from(table)
+    //         .upsert(updateData as any)
+    //         .select();
 
-        if (error) throw error;
-        return data;
-    }
+    //     if (error) throw error;
+    //     return data;
+    // }
 
-    async delete<T extends keyof Database["public"]["Tables"]>(
-        table: T,
-        field: keyof Database["public"]["Tables"][T]["Row"],
-        conditionValue: Database["public"]["Tables"][T]["Row"][keyof Database["public"]["Tables"][T]["Row"]]
-    ) {
-        const { data, error } = await this.database
-            .from(table)
-            .delete()
-            .eq(field.toString(), conditionValue);
-        if (error) throw error;
-        return data;
-    }
+    // async delete<T extends keyof Database["public"]["Tables"]>(
+    //     table: T,
+    //     field: keyof Database["public"]["Tables"][T]["Row"],
+    //     conditionValue: Database["public"]["Tables"][T]["Row"][keyof Database["public"]["Tables"][T]["Row"]]
+    // ) {
+    //     const { data, error } = await this.database
+    //         .from(table)
+    //         .delete()
+    //         .eq(field.toString(), conditionValue);
+    //     if (error) throw error;
+    //     return data;
+    // }
 
-    async fetchCoordinates(geographyValue: string) {
-        const { data, error } = await this.database.rpc("get_coordinates", {
-            geography_point: geographyValue,
+    async fetchCoordinates(lat: number, long: number) {
+        const { data, error } = await this.database.rpc("nearby_places", {
+            lat: lat,
+            long: long,
         });
 
         if (error) {
@@ -125,5 +125,20 @@ export class DbService {
         }
 
         return data; // data will contain an array of { longitude, latitude }
+    }
+
+    async nearbyRestaurants(lat: number, long: number) {
+        const { data, error } = await this.database.rpc("nearby_places", {
+            lat: lat,
+            long: long,
+            type: "restaurant",
+        });
+
+        if (error) {
+            console.error("Error fetching nearby restaurants:", error);
+            return null;
+        }
+
+        return data;
     }
 }

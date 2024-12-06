@@ -5,6 +5,6 @@ export interface PetInfo {
     age: number;
     size: number;
     type: string; // dog, cat, bird, fish, etc.
-    gender: string;
+    gender: number;
     description: string;
 }

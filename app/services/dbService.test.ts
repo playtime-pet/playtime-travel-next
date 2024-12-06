@@ -37,8 +37,9 @@ describe("DbService", () => {
                 error: null,
             });
 
-            const result = await dbService.fetchCoordinates(testGeographyPoint);
+            const result = await dbService.fetchCoordinates(-90, -140);
 
+            console.log(result);
             // Verify the RPC was called with correct parameters
             expect(mockRpc).toHaveBeenCalledWith("get_coordinates", {
                 geography_point: testGeographyPoint,
@@ -55,7 +56,7 @@ describe("DbService", () => {
                 error: new Error("Database error"),
             });
 
-            const result = await dbService.fetchCoordinates(testGeographyPoint);
+            const result = await dbService.fetchCoordinates(-90, -140);
 
             // Verify the RPC was called
             expect(mockRpc).toHaveBeenCalled();
