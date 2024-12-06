@@ -50,6 +50,24 @@ async function updatePlace(id: string, place: Partial<Omit<Places, "id">>) {
     return data;
 }
 
+async function nearbyPlaces(lat: number, long: number, type: string) {
+    return dbService.nearbyPlacesWithinRadius(lat, long, type, 3);
+}
+
+async function nearbyPlacesWithinRadius(
+    lat: number,
+    long: number,
+    radius_km: number
+) {
+    const { data, error } = await db.rpc("places_within_radius", {
+        lat: lat,
+        long: long,
+        radius_km: radius_km,
+    });
+    if (error) throw error;
+    return data;
+}
+
 const placesService = {
     insertPlace,
     listPlaces,

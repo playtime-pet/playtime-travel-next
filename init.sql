@@ -132,3 +132,40 @@ AS $$
   ORDER BY location <-> ST_Point(long, lat)::geography;
 $$
 ;
+
+
+CREATE OR REPLACE FUNCTION places_within_radius(
+    lat FLOAT, 
+    long FLOAT, 
+    radius_km FLOAT,
+    place_type VARCHAR DEFAULT NULL
+)
+RETURNS TABLE (
+    id public.places.id%TYPE,
+    name public.places.name%TYPE,
+    location public.places.location%TYPE,
+    type public.places.type%TYPE,
+    address public.places.address%TYPE,
+    pet_size public.places.pet_size%TYPE,
+    friendly_level public.places.friendly_level%TYPE,
+    additional_info public.places.additional_info%TYPE,
+    created_at public.places.created_at%TYPE,
+    updated_at public.places.updated_at%TYPE,
+    distance_meters FLOAT
+)
+LANGUAGE sql
+AS $$
+    SELECT 
+        id, name, location, type, address, pet_size, friendly_level, 
+        additional_info, created_at, updated_at,
+        ST_Distance(location, ST_SetSRID(ST_MakePoint(long, lat), 4326)::geography) AS distance_meters
+    FROM public.places
+    WHERE ST_DWithin(
+        location,
+        ST_SetSRID(ST_MakePoint(long, lat), 4326)::geography,
+        radius_km * 1000
+    )
+    AND (place_type IS NULL OR type = place_type)
+    ORDER BY distance_meters;
+$$
+;

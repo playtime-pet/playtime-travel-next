@@ -6,7 +6,7 @@ export type Json =
     | { [key: string]: Json | undefined }
     | Json[];
 
-export interface Database {
+export type Database = {
     graphql_public: {
         Tables: {
             [_ in never]: never;
@@ -198,6 +198,27 @@ export interface Database {
                     dist_meters: number;
                 }[];
             };
+            places_within_radius: {
+                Args: {
+                    lat: number;
+                    long: number;
+                    radius_km: number;
+                    place_type?: string;
+                };
+                Returns: {
+                    id: number;
+                    name: string;
+                    location: unknown;
+                    type: string;
+                    address: string;
+                    pet_size: number;
+                    friendly_level: number;
+                    additional_info: Json;
+                    created_at: string;
+                    updated_at: string;
+                    distance_meters: number;
+                }[];
+            };
         };
         Enums: {
             [_ in never]: never;
@@ -206,7 +227,7 @@ export interface Database {
             [_ in never]: never;
         };
     };
-}
+};
 
 type PublicSchema = Database[Extract<keyof Database, "public">];
 

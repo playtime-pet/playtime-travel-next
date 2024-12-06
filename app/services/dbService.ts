@@ -2,16 +2,6 @@ import { createClient, QueryData } from "@supabase/supabase-js";
 import { Database } from "../utils/types/database.types";
 // import { Tables } from "../utils/types/database-generated.types";
 
-type Tables = Database["public"]["Tables"];
-type TableName = keyof Tables;
-type Row<T extends TableName> = Tables[T]["Row"];
-type Insert<T extends TableName> = Tables[T]["Insert"];
-type Update<T extends TableName> = Tables[T]["Update"];
-
-type AllRows =
-    | Database["public"]["Tables"]["pet_info"]["Row"]
-    | Database["public"]["Tables"]["places"]["Row"]
-    | Database["public"]["Tables"]["user_info"]["Row"];
 export class DbService {
     private database;
 
@@ -113,29 +103,24 @@ export class DbService {
     //     return data;
     // }
 
-    async fetchCoordinates(lat: number, long: number) {
-        const { data, error } = await this.database.rpc("nearby_places", {
-            lat: lat,
-            long: long,
-        });
+    async nearbyPlacesWithinRadius(
+        lat: number,
+        long: number,
+        type: string,
+        radius_km: number
+    ) {
+        const { data, error } = await this.database.rpc(
+            "places_within_radius",
+            {
+                lat: lat,
+                long: long,
+                radius_km: radius_km,
+                place_type: type,
+            }
+        );
 
         if (error) {
-            console.error("Error fetching coordinates:", error);
-            return null;
-        }
-
-        return data; // data will contain an array of { longitude, latitude }
-    }
-
-    async nearbyRestaurants(lat: number, long: number) {
-        const { data, error } = await this.database.rpc("nearby_places", {
-            lat: lat,
-            long: long,
-            type: "restaurant",
-        });
-
-        if (error) {
-            console.error("Error fetching nearby restaurants:", error);
+            console.error("Error fetching nearby places within radius:", error);
             return null;
         }
 
