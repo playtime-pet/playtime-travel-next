@@ -2,9 +2,11 @@ import { petCache } from "@/app/utils/cache";
 import { DbService } from "./dbService";
 import { PetInfo } from "../models/PetInfo";
 import { Database } from "../utils/types/database.types";
+import { AMapService } from "./aMapService";
 
 const dbService = new DbService();
 const db = dbService.getDatabase();
+const amapService = new AMapService();
 
 async function list() {
     const { data, error } = await db.from("pet_info").select("*");
@@ -52,6 +54,9 @@ async function deletePet(id: string) {
     return id;
 }
 
+async function getPlaceInfoFromAmap(name: string, city: string) {
+    const { pois } = await amapService.getPlaceInfoByName(name, city);
+}
 const petInfoService = {
     list,
     create,
