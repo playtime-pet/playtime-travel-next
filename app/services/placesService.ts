@@ -1,7 +1,8 @@
 import { DbService } from "./dbService";
-import { PlaceInput, Places } from "../models/Places";
+import { initFromAMap, PlaceInput, Places } from "../models/Places";
 import { createLocationPoint } from "../utils/tools";
 import { Database } from "../utils/types/database.types";
+import aMapService from "./aMapService";
 
 const dbService = new DbService();
 const db = dbService.getDatabase();
@@ -48,6 +49,11 @@ async function updatePlace(id: string, place: Partial<Omit<Places, "id">>) {
         .single();
     if (error) throw error;
     return data;
+}
+
+async function searchAndInsertPlace(name: string, city: string, type: string) {
+    const placeInfo = await aMapService.getPlaceInfoByName(name, city);
+    return insertPlace(initFromAMap(placeInfo, type));
 }
 
 async function nearbyPlaces(lat: number, long: number, type: string) {
