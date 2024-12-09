@@ -79,6 +79,9 @@ const placesService = {
     listPlaces,
     getPlace,
     updatePlace,
+    searchAndInsertPlace,
+    nearbyPlaces,
+    nearbyPlacesWithinRadius,
 };
 
 export default placesService;

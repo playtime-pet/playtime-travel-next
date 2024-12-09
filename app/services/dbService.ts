@@ -1,4 +1,4 @@
-import { createClient, QueryData } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import { Database } from "../utils/types/database.types";
 // import { Tables } from "../utils/types/database-generated.types";
 
