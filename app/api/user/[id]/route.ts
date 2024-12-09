@@ -6,14 +6,22 @@ export async function GET(
     request: Request,
     { params }: { params: { id: string } }
 ) {
-    const { id } = await params;
-    const userInfo = await userInfoService.get(id);
+    try {
+        const { id } = await params;
+        const userInfo = await userInfoService.get(id);
 
-    if (!userInfo) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
+        if (!userInfo) {
+            return NextResponse.json(
+                { error: "User not found" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(userInfo);
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        return new NextResponse("Internal Server Error", { status: 500 });
     }
-
-    return NextResponse.json(userInfo);
 }
 
 export async function DELETE(

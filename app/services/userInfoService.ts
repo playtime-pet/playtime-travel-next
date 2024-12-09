@@ -41,6 +41,18 @@ async function get(id: string) {
     return data;
 }
 
+async function getByOpenid(openid: string) {
+    const { data, error } = await db
+        .from("user_info")
+        .select("*")
+        .eq("openid", openid)
+        .single();
+    if (error) throw error;
+
+    userCache.set(data.id, data as UserInfo);
+    return data;
+}
+
 async function deleteUser(id: string) {
     const { error } = await db.from("user_info").delete().eq("id", id);
     if (error) throw error;
@@ -50,5 +62,5 @@ async function deleteUser(id: string) {
     return id;
 }
 
-const userInfoService = { list, create, get, deleteUser };
+const userInfoService = { list, create, get, deleteUser, getByOpenid };
 export default userInfoService;

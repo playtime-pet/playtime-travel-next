@@ -51,11 +51,21 @@ async function deletePet(id: string) {
     return id;
 }
 
+async function getPetsByUserId(userId: string) {
+    const { data, error } = await db
+        .from("pet_info")
+        .select("*")
+        .eq("user_id", userId);
+    if (error) throw error;
+    return data;
+}
+
 const petInfoService = {
     list,
     create,
     get,
     deletePet,
+    getPetsByUserId,
 };
 
 export default petInfoService;
