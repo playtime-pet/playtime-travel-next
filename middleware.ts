@@ -6,33 +6,41 @@ import { UserInfo } from "./app/models/UserInfo";
 import userInfoService from "./app/services/userInfoService";
 import petInfoService from "./app/services/petInfoService";
 import { PetInfo } from "./app/models/PetInfo";
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 // import { userCache } from "./app/utils/cache";
 
 export async function middleware(request: NextRequest) {
-    const userId =
-        request.headers.get("x-user-id") ||
-        request.nextUrl.searchParams.get("userId");
-    if (!userId) {
-        return NextResponse.next();
-    }
-    const userInfo: UserInfo = await userInfoService.get(userId);
-    const petId =
-        request.headers.get("x-pet-id") ||
-        request.nextUrl.searchParams.get("petId");
+    const res = NextResponse.next();
+    const supabase = createMiddlewareClient({ req: request, res });
 
-    let petInfo: PetInfo | null = null;
+    // 刷新 session 如果需要的话
+    await supabase.auth.getSession();
 
-    return requestContext.runWithContext(userId, petId, async () => {
-        console.log("userID", userId, "petID", petId);
+    return res;
+    // const userId =
+    //     request.headers.get("x-user-id") ||
+    //     request.nextUrl.searchParams.get("userId");
+    // if (!userId) {
+    //     return NextResponse.next();
+    // }
+    // const userInfo: UserInfo = await userInfoService.get(userId);
+    // const petId =
+    //     request.headers.get("x-pet-id") ||
+    //     request.nextUrl.searchParams.get("petId");
 
-        userContext.setUserInfo(userInfo);
-        if (petId) {
-            petInfo = await petInfoService.get(petId);
-            userContext.setPetInfo(petId, petInfo);
-        }
-        // 中间件的其他逻辑...
-        return NextResponse.next();
-    });
+    // let petInfo: PetInfo | null = null;
+
+    // return requestContext.runWithContext(userId, petId, async () => {
+    //     console.log("userID", userId, "petID", petId);
+
+    //     userContext.setUserInfo(userInfo);
+    //     if (petId) {
+    //         petInfo = await petInfoService.get(petId);
+    //         userContext.setPetInfo(petId, petInfo);
+    //     }
+    //     // 中间件的其他逻辑...
+    //     return NextResponse.next();
+    // });
 }
 
 export const config = {

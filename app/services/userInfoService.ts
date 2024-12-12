@@ -34,6 +34,8 @@ async function get(id: string) {
         .select("*")
         .eq("id", id)
         .single();
+
+    // TODO zero data process
     if (error) throw error;
 
     userCache.set(id, data as UserInfo);

@@ -19,13 +19,13 @@ export async function wechatLogin(code: string) {
 
     // 2. 根据 openid 查找或创建用户
     let user = await userInfoService.getByOpenid(openid);
-    if (!user) {
-        user = await userInfoService.create({
-            openid: openid,
-            name: "未命名",
-            avatar: "",
-        });
-    }
+    // if (!user) {
+    //     user = await userInfoService.create({
+    //         openid: openid,
+    //         name: "未命名",
+    //         avatar: "",
+    //     });
+    // }
 
     // // 3. 生成token
     // const token = generateToken(user);

@@ -147,6 +147,7 @@ export type Database = {
                     created_at: string | null;
                     id: string;
                     name: string;
+                    verified: boolean;
                     openid: string | null;
                     updated_at: string | null;
                 };
@@ -155,6 +156,7 @@ export type Database = {
                     created_at?: string | null;
                     id?: string;
                     name: string;
+                    verified?: boolean;
                     openid?: string | null;
                     updated_at?: string | null;
                 };
@@ -163,6 +165,7 @@ export type Database = {
                     created_at?: string | null;
                     id?: string;
                     name?: string;
+                    verified?: boolean;
                     openid?: string | null;
                     updated_at?: string | null;
                 };

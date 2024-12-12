@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import userInfoService from "@/app/services/userInfoService";
+import { deleteUser, supabase } from "@/app/lib/supabase";
 
 export async function GET(
     request: Request,
@@ -24,12 +25,15 @@ export async function GET(
     }
 }
 
+// link user with supabse user ID
 export async function DELETE(
     request: Request,
     { params }: { params: { id: string } }
 ) {
     const { id } = await params;
     const userInfo = await userInfoService.deleteUser(id);
+    // delete user from supabase
+    const data = await deleteUser(id);
 
     return NextResponse.json({ user_id: userInfo });
 }
