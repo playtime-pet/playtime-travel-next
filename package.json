@@ -17,7 +17,7 @@
         "@supabase/auth-helpers-nextjs": "^0.10.0",
         "@supabase/supabase-js": "^2.47.3",
         "@tavily/core": "^0.0.2",
-        "axios": "^1.7.9",
+        "axios": "^1.8.2",
         "lru-cache": "^11.0.2",
         "next": "15.2.4",
         "react": "19.0.0-rc-66855b96-20241106",
